@@ -1,8 +1,28 @@
 import express from "express";
 import bodyParser from "body-parser";
+import pg from "pg";
+
+const db = new pg.Client({ // variable to call postgress DB
+  user: "postgres",
+  host: "localhost",
+  database: "world",
+  password: "23132019",
+  port: 5432,
+});
+db.connect();
 
 const app = express();
 const port = 3000;
+
+let flag = [];
+
+db.query("SELECT * FROM flags", (err, res) => {
+  if (err) {
+    console.error("Error executing query", err.stack);
+  } else {
+    flag = res.rows;
+  }
+});
 
 let totalCorrect = 0;
 
@@ -39,7 +59,7 @@ app.post("/submit", (req, res) => {
 });
 
 function nextQuestion() {
-  const randomCountry = quiz[Math.floor(Math.random() * quiz.length)];
+  const randomCountry = flag[Math.floor(Math.random() * flag.length)];
   currentQuestion = randomCountry;
 }
 
